@@ -27,6 +27,14 @@
 #include "fg_internal.h"
 #include "fg_gl2.h"
 
+FGH_PFNGLGENBUFFERSPROC fghGenBuffers;
+FGH_PFNGLDELETEBUFFERSPROC fghDeleteBuffers;
+FGH_PFNGLBINDBUFFERPROC fghBindBuffer;
+FGH_PFNGLBUFFERDATAPROC fghBufferData;
+FGH_PFNGLENABLEVERTEXATTRIBARRAYPROC fghEnableVertexAttribArray;
+FGH_PFNGLDISABLEVERTEXATTRIBARRAYPROC fghDisableVertexAttribArray;
+FGH_PFNGLVERTEXATTRIBPOINTERPROC fghVertexAttribPointer;
+
 void FGAPIENTRY glutSetVertexAttribCoord3(GLint attrib) {
   if (fgStructure.CurrentWindow != NULL)
     fgStructure.CurrentWindow->Window.attribute_v_coord = attrib;

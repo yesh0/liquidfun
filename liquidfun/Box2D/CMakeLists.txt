@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.7)
 
 project(Box2D)
 
@@ -75,7 +75,7 @@ if(MSVC)
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR
        CMAKE_COMPILER_IS_CLANGXX)
   # Set the maximum warning level for gcc.
-  set(C_FLAGS_WARNINGS "-Wall -Werror -Wno-long-long -Wno-variadic-macros")
+  set(C_FLAGS_WARNINGS "-Wall -Wno-long-long -Wno-variadic-macros")
 endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_FLAGS_WARNINGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${C_FLAGS_WARNINGS}")
@@ -98,23 +98,6 @@ if (BOX2D_CODE_COVERAGE AND
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GCOV_FLAGS}")
   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${GCOV_FLAGS}")
 endif()
-
-# The XCode generator ignores CMAKE_C_FLAGS AND CMAKE_CXX_FLAGS so flags
-# need to be added with target properties.
-# The following functions track the list of targets so that it's possible to
-# add flags to all targets using target properties.
-set(ALL_TARGETS "" CACHE INTERNAL "")
-# Override add_library() and adding the target to the ALL_TARGETS variable.
-function(add_library name)
-  _add_library(${name} ${ARGN})
-  set(ALL_TARGETS "${ALL_TARGETS}" "${name}" CACHE INTERNAL "")
-endfunction(add_library)
-
-# Override add_executable() and adding the target to the ALL_TARGETS variable.
-function(add_executable name)
-  _add_executable(${name} ${ARGN})
-  set(ALL_TARGETS "${ALL_TARGETS}" "${name}" CACHE INTERNAL "")
-endfunction(add_executable)
 
 # The Box2D library.
 add_subdirectory(Box2D)
@@ -141,7 +124,7 @@ endif(BOX2D_INSTALL_DOC)
 
 # Set the warning flags for all targets when using the Xcode generator.
 if(CMAKE_COMPILER_IS_CLANGXX)
-  foreach(target ${ALL_TARGETS})
+  foreach(target ${BUILDSYSTEM_TARGETS})
     set_target_properties(${target} PROPERTIES XCODE_ATTRIBUTE_WARNING_CFLAGS
                           "${C_FLAGS_WARNINGS}")
   endforeach(target)
@@ -161,7 +144,7 @@ endif()
 # Override / reset the output directory for all targets.
 set(LIB_OUTPUT_DIR "${OUTPUT_SUBDIR}")
 set(EXE_OUTPUT_DIR "${OUTPUT_SUBDIR}")
-foreach(target ${ALL_TARGETS})
+foreach(target ${BUILDSYSTEM_TARGETS})
   set_target_properties(
     ${target} PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${LIB_OUTPUT_DIR}"
